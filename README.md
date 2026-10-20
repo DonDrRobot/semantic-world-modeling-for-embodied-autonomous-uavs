@@ -1,56 +1,56 @@
 # Semantic World Modeling for Embodied Autonomous UAVs
 
-**Tesis doctoral** · Rafael Alejandro Cruz Ovando · avance a octubre de 2026
+**PhD thesis** · Rafael Alejandro Cruz Ovando · progress as of October 2026
 
-Título propuesto, por acordar: *Self-Supervised Predictive World Models for Situation-Aware Autonomous UAVs*
+Proposed title, to be agreed: *Self-Supervised Predictive World Models for Situation-Aware Autonomous UAVs*
 
-## La pregunta
+## The question
 
-> ¿Cómo puede un dron construir, desde un modelo del mundo autosupervisado tipo JEPA, una representación de su situación que le permita predecir y evaluar el impacto de sus acciones para decidir solo?
+> How can a drone build, from a self-supervised JEPA-style world model, a representation of its situation that lets it predict and evaluate the impact of its actions in order to decide on its own?
 
-Se responde en tres etapas que construyen un mismo sistema:
+It is answered in three stages that build a single system:
 
-| Etapa | Qué resuelve | Estado |
+| Stage | What it solves | Status |
 |---|---|---|
-| **A · Cómo se mueve** | Juntar la cámara a bordo con la IMU en el modelo del mundo, para que el dron sepa cómo se mueve y pueda planear su vuelo | Comprometida; primera contribución |
-| **B · Qué no ve** | Llevar una creencia de lo que no ve y de los futuros posibles, y decidir cuándo conviene mirar | Comprometida |
-| **C · Hacia dónde va** | Escribir la meta como posición o condición con significado, no como una foto | Propuesta, si alcanza el tiempo |
+| **A · How it moves** | Fuse the onboard camera with the IMU in the world model, so the drone knows how it moves and can plan its flight | Committed; first contribution |
+| **B · What it can't see** | Keep a belief about what it cannot see and about the possible futures, and decide when it is worth looking | Committed |
+| **C · Where it's going** | Write the goal as a position or a condition with meaning, not as a picture | Proposed, if time allows |
 
-![Mapa del proyecto](imagenes/mapa_del_proyecto.png)
+![Project map](images/project_map.png)
 
-## Cronograma
+## Timeline
 
-![Cronograma 2026–2030](imagenes/cronograma.png)
+![Timeline 2026–2030](images/timeline.png)
 
-Entregables: una revisión de alcance sobre modelos del mundo tipo JEPA usados para decidir (envío en feb–mar de 2027), el artículo de la etapa A (≈ feb 2028) y el de la etapa B (≈ jul 2029). La propuesta de tesis es en julio o agosto de 2027.
+Deliverables: a scoping review of JEPA-style world models used for decision-making (submission in Feb–Mar 2027), the stage A paper (≈ Feb 2028) and the stage B paper (≈ Jul 2029). The thesis proposal is in July or August 2027.
 
-## Lo hecho hasta ahora
+## What has been done so far
 
-1. **Marco de referencia.** Los niveles del modelo JDL de fusión de datos y la *situation awareness* de Endsley, usados para ubicar el trabajo, no como receta.
-2. **Primer modelo.** Una representación semántica de la situación sobre JEPA (niveles 2 y 3 del JDL), presentada a los asesores en octubre de 2026.
-3. **Indicaciones de esa reunión.** Respaldar la representación o compararla con otras opciones, ir de lo simple a lo complejo, dejar fuera por ahora al humano (nivel 5) y preparar este mapa y cronograma.
-4. **Revisión de la literatura.** Más de 100 artículos leídos, completos o en parte, y un censo en arXiv de 601 artículos sobre JEPA y 59 sobre modelos del mundo aéreos (al 20 de octubre de 2026).
-5. **El hallazgo que reordenó el plan.** Para un dron, los niveles 0 y 1 no están resueltos: un solo cuadro de video no contiene la velocidad, sin el estado propio no se puede planear un sistema inestable y ningún modelo del mundo JEPA junta la cámara a bordo con la IMU para planear un vuelo. Por eso la fase 1, que se pensaba solo adaptar, se volvió la etapa A.
-6. **La etapa A, definida:** problema, pregunta, hipótesis y contribución, resumidos abajo.
+1. **Frame of reference.** The levels of the JDL data fusion model and Endsley's *situation awareness*, used to locate the work, not as a recipe.
+2. **First model.** A semantic representation of the situation on top of JEPA (JDL levels 2 and 3), presented to the advisors in October 2026.
+3. **Guidance from that meeting.** Support the representation or compare it with alternatives, go from simple to complex, leave the human (level 5) out for now, and prepare this map and timeline.
+4. **Literature review.** More than 100 papers read, fully or in part, and an arXiv census of 601 papers on JEPA and 59 on aerial world models (as of 20 October 2026).
+5. **The finding that reordered the plan.** For a drone, JDL levels 0 and 1 are not solved: a single video frame does not contain velocity, an unstable system cannot be planned without its own state, and no JEPA world model fuses the onboard camera with the IMU to plan a flight. That is why phase 1, which was meant to be a simple adaptation, became stage A.
+6. **Stage A defined:** problem, question, hypothesis and contribution, summarized below.
 
-![Los niveles del JDL como marco de referencia](imagenes/niveles_jdl.png)
+![JDL levels as a frame of reference](images/jdl_levels.png)
 
-## La etapa A en breve
+## Stage A in brief
 
-- **Problema.** Un dron es rápido e inestable, y casi todo lo que cambia en su cámara se debe a su propio movimiento. Un JEPA que aprende solo de imágenes registra mal ese movimiento. Las piezas existen por separado: un JEPA de dron que usa su estado pero no ve, drones con cámara que no usan la IMU o no planean con el modelo, y JEPA que juntan imagen y estado propio, pero con la cámara fija o en un vehículo lento y estable.
-- **Pregunta.** ¿Cómo debe entrar el movimiento propio de un dron (lo que miden su IMU y su estado) en un modelo del mundo tipo JEPA que aprende de su cámara a bordo, para que el modelo sepa cómo se mueve el dron y le sirva para planear su vuelo? ¿Y en qué condiciones juntar cámara y movimiento propio planea mejor que usar solo uno de los dos, o que un modelo que no es JEPA con los mismos sensores?
-- **Hipótesis.** Si el movimiento propio entra al predictor y además se obliga al latente de la cámara a seguir registrando el movimiento, el modelo planea el vuelo con más éxito que usando solo la cámara o solo el estado en tres condiciones: cuando importa la velocidad, cuando hay obstáculos que solo ve la cámara y cuando cambia la dinámica o falla un sensor.
-- **Contribución.** (1) Dónde y cómo debe entrar el movimiento propio en el modelo. (2) Planear un vuelo con un JEPA de cámara e IMU, en simulación. (3) El mapa de condiciones en que pagan la cámara, la IMU y el propio JEPA.
+- **Problem.** A drone is fast and unstable, and almost everything that changes in its camera is due to its own motion. A JEPA that learns only from images registers that motion poorly. The pieces exist separately: a drone JEPA that uses its state but does not see, camera-equipped drones that do not use the IMU or do not plan with the model, and JEPAs that combine images with the agent's own state, but with a fixed camera or on a slow, stable vehicle.
+- **Question.** How should a drone's own motion (what its IMU and state measure) enter a JEPA-style world model that learns from its onboard camera, so that the model knows how the drone moves and can be used to plan its flight? And under which conditions does combining camera and own motion plan better than using only one of them, or than a non-JEPA model with the same sensors?
+- **Hypothesis.** If the drone's own motion enters the predictor, and the camera latent is also forced to keep registering that motion, the model plans the flight more successfully than with the camera alone or the state alone under three conditions: when velocity matters, when there are obstacles that only the camera sees, and when the dynamics change or a sensor fails.
+- **Contribution.** (1) Where and how the drone's own motion should enter the model. (2) Planning a flight with a camera-and-IMU JEPA, in simulation. (3) A map of the conditions under which the camera, the IMU and JEPA itself pay off.
 
-![Condicionamiento de las variables (borrador)](imagenes/condicionamiento_variables.png)
+![Conditioning of the variables (draft)](images/variable_conditioning.png)
 
-## Qué sigue
+## Next steps
 
-- **Noviembre de 2026:** el protocolo de la revisión de alcance; LeWM funcionando en el clúster; escoger el simulador.
-- **Febrero–marzo de 2027:** enviar la revisión.
-- **Marzo–julio de 2027:** formalizar la etapa A y obtener los primeros resultados (sondas y predicción) para la propuesta de tesis.
+- **November 2026:** the scoping review protocol; LeWM running on the cluster; choose the simulator.
+- **February–March 2027:** submit the review.
+- **March–July 2027:** formalize stage A and obtain first results (probes and prediction) for the thesis proposal.
 
-## Artículos
+## Papers
 
-- [REFERENCIAS.md](REFERENCIAS.md): los 38 artículos leídos más relevantes, por tema, con su DOI.
-- Los PDF están en una carpeta de Google Drive con acceso por invitación: *enlace pendiente*.
+- [REFERENCES.md](REFERENCES.md): the 38 most relevant papers read, by topic, with DOI and a link to each PDF.
+- All the PDFs: [Google Drive folder](https://drive.google.com/drive/folders/1Obm_1B9zgg5RyZssxd5ZyWDiSUHBFwrG?usp=sharing).
